@@ -35,6 +35,21 @@
 		});
 	}
 
+	// Expose the sticky header height as a CSS variable so the fixed mobile
+	// navigation panel can be anchored directly beneath the header regardless of
+	// the active responsive breakpoint.
+	function updateHeaderHeight() {
+		var header = document.querySelector('.elementor-location-header');
+		if (!header) {
+			return;
+		}
+
+		var height = Math.round(header.getBoundingClientRect().height);
+		if (height > 0) {
+			document.documentElement.style.setProperty('--ajobs-header-height', height + 'px');
+		}
+	}
+
 	function getDropdown(toggle) {
 		var dropdown = toggle.nextElementSibling;
 		if (dropdown && dropdown.classList.contains(CONTAINER_CLASS)) {
@@ -57,6 +72,7 @@
 	}
 
 	function toggleMenu(toggle) {
+		updateHeaderHeight();
 		setMenuState(toggle, !toggle.classList.contains('elementor-active'));
 	}
 
@@ -151,6 +167,11 @@
 		document.querySelectorAll(TOGGLE_SELECTOR).forEach(function (toggle) {
 			setMenuState(toggle, toggle.classList.contains('elementor-active'));
 		});
+
+		updateHeaderHeight();
+		window.addEventListener('resize', updateHeaderHeight);
+		window.addEventListener('orientationchange', updateHeaderHeight);
+		window.addEventListener('load', updateHeaderHeight);
 	}
 
 	function init() {
