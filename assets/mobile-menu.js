@@ -1,4 +1,7 @@
 (function () {
+	var TOGGLE_SELECTOR = '.elementor-menu-toggle';
+	var CONTAINER_CLASS = 'elementor-nav-menu__container';
+
 	function normalizePath(path) {
 		if (!path || path === '/') {
 			return '/';
@@ -32,59 +35,121 @@
 		});
 	}
 
-	function closeMenu(toggle) {
-		if (!toggle) {
-			return;
-		}
-
-		toggle.classList.remove('elementor-active');
-		toggle.setAttribute('aria-expanded', 'false');
-
+	function getDropdown(toggle) {
 		var dropdown = toggle.nextElementSibling;
-		if (dropdown && dropdown.classList.contains('elementor-nav-menu__container')) {
-			dropdown.setAttribute('aria-hidden', 'true');
+		if (dropdown && dropdown.classList.contains(CONTAINER_CLASS)) {
+			return dropdown;
+		}
+		return null;
+	}
+
+	function setMenuState(toggle, isOpen) {
+		toggle.classList.toggle('elementor-active', isOpen);
+		toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+		var dropdown = getDropdown(toggle);
+		if (dropdown) {
+			dropdown.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+			dropdown.querySelectorAll('a.elementor-item').forEach(function (link) {
+				link.setAttribute('tabindex', isOpen ? '0' : '-1');
+			});
 		}
 	}
 
 	function toggleMenu(toggle) {
-		var isOpen = toggle.classList.toggle('elementor-active');
-		toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+		setMenuState(toggle, !toggle.classList.contains('elementor-active'));
+	}
 
-		var dropdown = toggle.nextElementSibling;
-		if (dropdown && dropdown.classList.contains('elementor-nav-menu__container')) {
-			dropdown.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+	function closeMenu(toggle) {
+		if (toggle) {
+			setMenuState(toggle, false);
 		}
 	}
 
+	function getToggleFromEvent(event) {
+		var target = event.target;
+		if (!target || typeof target.closest !== 'function') {
+			return null;
+		}
+		return target.closest(TOGGLE_SELECTOR);
+	}
+
+	function isActivationKey(event) {
+		return event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar' || event.keyCode === 13 || event.keyCode === 32;
+	}
+
+	// Elementor's own nav-menu handler also binds a click/keyup listener on the
+	// same toggle and toggles the exact same `elementor-active` class. When both
+	// run on a single interaction the class is flipped twice and the menu never
+	// opens. We capture the events on `document` (capturing phase runs before the
+	// event reaches the toggle) and stop propagation so this script is the single
+	// source of truth for the mobile menu, regardless of script load order.
 	function initMobileMenu() {
-		document.querySelectorAll('.elementor-menu-toggle').forEach(function (toggle) {
-			if (toggle.dataset.menuBound === 'true') {
-				return;
-			}
-
-			toggle.dataset.menuBound = 'true';
-
-			toggle.addEventListener('click', function () {
-				toggleMenu(toggle);
-			});
-
-			toggle.addEventListener('keydown', function (event) {
-				if (event.key === 'Enter' || event.key === ' ') {
-					event.preventDefault();
-					toggleMenu(toggle);
-				}
-			});
-		});
-
-		document.querySelectorAll('.elementor-nav-menu--dropdown .elementor-item').forEach(function (link) {
-			link.addEventListener('click', function () {
-				var widget = link.closest('.elementor-widget-nav-menu');
-				if (!widget) {
+		document.addEventListener(
+			'click',
+			function (event) {
+				var toggle = getToggleFromEvent(event);
+				if (!toggle) {
 					return;
 				}
 
-				closeMenu(widget.querySelector('.elementor-menu-toggle'));
-			});
+				event.stopImmediatePropagation();
+				toggleMenu(toggle);
+			},
+			true
+		);
+
+		document.addEventListener(
+			'keydown',
+			function (event) {
+				var toggle = getToggleFromEvent(event);
+				if (!toggle || !isActivationKey(event)) {
+					return;
+				}
+
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				toggleMenu(toggle);
+			},
+			true
+		);
+
+		// Block Elementor's keyup handler (which synthesizes a click) so a single
+		// key press cannot toggle the menu twice.
+		document.addEventListener(
+			'keyup',
+			function (event) {
+				var toggle = getToggleFromEvent(event);
+				if (!toggle || !isActivationKey(event)) {
+					return;
+				}
+
+				event.stopImmediatePropagation();
+			},
+			true
+		);
+
+		// Close the open menu after a navigation link inside the dropdown is used.
+		document.addEventListener('click', function (event) {
+			var target = event.target;
+			if (!target || typeof target.closest !== 'function') {
+				return;
+			}
+
+			var link = target.closest('.elementor-nav-menu--dropdown .elementor-item');
+			if (!link) {
+				return;
+			}
+
+			var widget = link.closest('.elementor-widget-nav-menu');
+			if (widget) {
+				closeMenu(widget.querySelector(TOGGLE_SELECTOR));
+			}
+		});
+
+		// Ensure the initial state is consistent on load.
+		document.querySelectorAll(TOGGLE_SELECTOR).forEach(function (toggle) {
+			setMenuState(toggle, toggle.classList.contains('elementor-active'));
 		});
 	}
 
