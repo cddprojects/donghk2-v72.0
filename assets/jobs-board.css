@@ -237,11 +237,13 @@
 	align-items: flex-start;
 	justify-content: space-between;
 	gap: 8px;
+	padding: 2px 0;
 }
 
 #job .job-card__title-row .job-card__title {
 	flex: 1;
 	min-width: 0;
+	padding: 0;
 }
 
 #job .job-card__badge {
@@ -250,7 +252,7 @@
 	color: #fff;
 	font-size: 12px;
 	font-weight: 700;
-	padding: 4px 8px;
+	padding: 6px 8px;
 	border-radius: 999px;
 	line-height: 1.2;
 	white-space: nowrap;
@@ -281,12 +283,13 @@
 	flex-wrap: wrap;
 	align-items: center;
 	gap: 6px;
+	padding: 2px 0;
 }
 
 #job .job-card__meta .job-pay,
 #job .job-card__meta .job-tag {
 	font-size: 12px;
-	padding: 5px 10px;
+	padding: 7px 10px;
 }
 
 #job .job-card__title {
@@ -296,11 +299,16 @@
 	color: #111;
 }
 
+#job .job-card__head > .job-card__title {
+	padding: 2px 0;
+}
+
 #job .job-card__desc {
 	margin: 0;
 	color: #666;
 	font-size: 17px;
 	line-height: 1.5;
+	padding: 2px 0;
 	flex: 1;
 	display: -webkit-box;
 	-webkit-line-clamp: 3;
@@ -323,6 +331,7 @@
 	font-size: 15px;
 	color: #444;
 	line-height: 1.4;
+	padding: 2px 0;
 }
 
 #job .job-card__skills svg {
@@ -338,6 +347,7 @@
 	color: #9b0000;
 	font-size: 14px;
 	font-weight: 700;
+	padding: 2px 0;
 	text-decoration: none;
 }
 
