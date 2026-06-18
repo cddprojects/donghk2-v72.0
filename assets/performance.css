@@ -1,0 +1,18 @@
+/* Show page content immediately instead of waiting for Elementor animation JS. */
+.elementor-invisible {
+	visibility: visible !important;
+	opacity: 1 !important;
+	animation: none !important;
+	transform: none !important;
+}
+
+/* Keep below-the-fold sections from blocking initial paint work. */
+#type,
+#job,
+#about,
+#why,
+#comment,
+.elementor-location-footer {
+	content-visibility: auto;
+	contain-intrinsic-size: 1px 900px;
+}
