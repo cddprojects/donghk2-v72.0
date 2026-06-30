@@ -135,6 +135,33 @@
 	border-radius: 999px;
 }
 
+#job .job-featured__badge--premium {
+	background: #1a2a4a;
+	color: #c9a227;
+	border: 1px solid #c9a227;
+}
+
+#job .job-featured--spotlight {
+	border: 2px solid #d4a0a0;
+	background: linear-gradient(135deg, #fff9f9 0%, #ffffff 50%, #f8faff 100%);
+	box-shadow: 0 12px 40px rgba(155, 0, 0, 0.12);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#job .job-featured--spotlight .job-pay {
+	background: #e8eeff;
+	color: #1a3a7a;
+	font-size: 13px;
+	padding: 6px 12px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	#job .job-featured--spotlight:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 16px 48px rgba(155, 0, 0, 0.16);
+	}
+}
+
 #job .job-featured__title {
 	margin: 0 0 8px;
 	font-size: 24px;
