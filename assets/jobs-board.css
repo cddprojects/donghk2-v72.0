@@ -299,6 +299,14 @@
 	display: none;
 }
 
+#job .job-featured.is-hidden {
+	display: none;
+}
+
+#job .job-board__featured.is-hidden {
+	display: none;
+}
+
 #job .job-card__head {
 	display: flex;
 	flex-direction: column;
